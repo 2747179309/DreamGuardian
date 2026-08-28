@@ -1,0 +1,11 @@
+menu "DreamGuardian Voice Debug"
+
+config DEBUG_AUDIO_CAPTURE
+    bool "Enable debug audio capture to WAV"
+    default n
+    help
+        Capture raw microphone PCM and AFE output PCM into PSRAM, then write
+        16 kHz mono signed 16-bit WAV files from a low-priority writer task.
+        The real-time audio feed/fetch tasks only copy samples into memory.
+
+endmenu

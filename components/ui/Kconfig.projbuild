@@ -1,0 +1,5 @@
+menu "DreamGuardian UI"
+    config DG_ENABLE_BOX_DISPLAY
+        bool "Enable ESP32-S3-BOX-3 display dashboard"
+        default y
+endmenu

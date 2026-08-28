@@ -1,0 +1,1 @@
+timestamp,audio_rms,audio_peak,vad_state,wake_score,threshold,consecutive_hit_frames,inference_time_ms,i2s_overflow_count,audio_drop_count,label,file,notes

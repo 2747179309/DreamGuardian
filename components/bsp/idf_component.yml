@@ -1,0 +1,12 @@
+## IDF Component Manager Manifest File
+dependencies:
+
+  esp_codec_dev:
+    public: true
+    version: "1.1.0"
+
+  espressif/button:
+    version: "^3.5.0"
+
+  espressif/esp-box-3:
+    version: "1.1.*"

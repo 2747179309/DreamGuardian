@@ -1,0 +1,14 @@
+{
+  "feishu_app_id": "YOUR_FEISHU_APP_ID",
+  "feishu_app_secret": "YOUR_FEISHU_APP_SECRET",
+  "device_base_url": "http://DEVICE_IP",
+  "reply_enabled": true,
+  "reconnect_delay_sec": 10,
+  "llm_enabled": false,
+  "llm_base_url": "https://YOUR_LLM_PROVIDER/v1",
+  "llm_api_key": "",
+  "llm_model": "YOUR_LLM_MODEL",
+  "llm_timeout_sec": 30,
+  "use_claw_tools": true
+}
+

@@ -1,0 +1,40 @@
+# ESP-IDF generated files
+build*/
+managed_components/
+sdkconfig
+sdkconfig.old
+
+# Local environments and editor state
+.venv/
+.vscode/
+.idea/
+.tmp/
+tool_tmp/
+tmp_zip/
+__pycache__/
+*.pyc
+
+# Runtime output and firmware images
+*.log
+*.bin
+*.elf
+*.map
+*.zip
+
+# Credentials and machine-local configuration
+tools/feishu_bridge_config.json
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Personal voice material and locally trained templates
+wake_samples/
+custom_wakenet/
+*.tmpl
+
+# Operating-system files
+.DS_Store
+Thumbs.db

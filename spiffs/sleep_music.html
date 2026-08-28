@@ -1,0 +1,2675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深眠潮汐 · SleepTide 助眠空间 - 自适应大自然混音器</title>
+    <!-- Google Fonts: Outfit and Noto Sans SC for clean modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #06050b;
+            --panel-bg: rgba(18, 14, 36, 0.45);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --panel-border-hover: rgba(139, 92, 246, 0.3);
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.5);
+            --secondary: #06b6d4;
+            --accent: #d946ef;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-glow: rgba(243, 244, 246, 0.15);
+            --card-active-glow: rgba(99, 102, 241, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glowing Background Orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: 0;
+            transition: all 5s ease;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #6366f1, #3b82f6);
+            top: -100px;
+            left: -100px;
+            animation: float-1 25s infinite alternate ease-in-out;
+        }
+
+        .orb-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #a855f7, #ec4899);
+            bottom: -150px;
+            right: -100px;
+            animation: float-2 30s infinite alternate ease-in-out;
+        }
+
+        .orb-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #06b6d4, #6366f1);
+            top: 40%;
+            left: 35%;
+            animation: float-3 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes float-1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(80px, 60px) scale(1.1); }
+        }
+
+        @keyframes float-2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-100px, -50px) scale(1.2); }
+        }
+
+        @keyframes float-3 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(60px, -80px) scale(0.9); }
+        }
+
+        /* Starry background effect */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 80px 240px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 150px 80px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 250px 10px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 300px 300px;
+        }
+
+        /* App Layout Container */
+        .app-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 92%;
+            max-width: 1200px;
+            margin: 20px auto;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 32px;
+            padding: 30px;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Header Section */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 20px;
+        }
+
+        .logo-area h1 {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--text-main) 30%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-area p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .status-badge {
+            background: rgba(139, 92, 246, 0.12);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: #c084fc;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .status-badge::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #a855f7;
+            box-shadow: 0 0 10px #a855f7;
+        }
+        
+        .status-badge.playing::before {
+            background-color: #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-badge.playing {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.25);
+            color: #34d399;
+        }
+
+        /* Main Workspace Grid */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1.3fr;
+            gap: 30px;
+            min-height: 520px;
+        }
+
+        @media (max-width: 900px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+            .app-wrapper {
+                padding: 20px;
+                border-radius: 24px;
+            }
+        }
+
+        /* LEFT SIDE: Visualizer & Breathing Guide */
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Canvas Overlay for Music Visualizer Waves */
+        #visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.65;
+            pointer-events: none;
+        }
+
+        /* Breathing Circle Container */
+        .breathing-area {
+            position: relative;
+            z-index: 5;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .breathing-glow {
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 0 40px 10px rgba(139, 92, 246, 0.2);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .breathing-ring {
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            pointer-events: none;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ring-1 {
+            animation: ring-rotate-clockwise 40s linear infinite;
+        }
+        
+        .ring-2 {
+            width: 220px;
+            height: 220px;
+            border: 1px dotted rgba(255, 255, 255, 0.1);
+            animation: ring-rotate-counter 30s linear infinite;
+        }
+
+        @keyframes ring-rotate-clockwise {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes ring-rotate-counter {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .breathing-circle {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(17, 10, 36, 0.9) 0%, rgba(31, 24, 60, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-main);
+            z-index: 10;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.05s linear; /* Smooth micro scaling */
+        }
+
+        #breath-text {
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+
+        #breath-timer {
+            font-size: 14px;
+            font-weight: 300;
+            color: var(--secondary);
+            margin: 6px 0;
+            letter-spacing: 0.5px;
+        }
+
+        #breath-subtext {
+            font-size: 10px;
+            color: var(--text-muted);
+            max-width: 130px;
+            line-height: 1.4;
+        }
+
+        /* Breathing Mode Controls */
+        .breath-controls {
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .breath-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            padding: 0 5px;
+        }
+
+        .breath-modes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .breath-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-family: inherit;
+            padding: 8px 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .breath-btn:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .breath-btn.active {
+            background: rgba(139, 92, 246, 0.25);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            color: var(--text-main);
+            text-shadow: 0 0 6px rgba(139, 92, 246, 0.6);
+            font-weight: 500;
+        }
+
+        /* RIGHT SIDE: Mixers, Timer, Presets */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Presets Area */
+        .section-block {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 500px) {
+            .presets-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .preset-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+        }
+
+        .preset-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--panel-border-hover);
+            transform: translateY(-2px);
+        }
+
+        .preset-card.active {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+        }
+
+        .preset-card .preset-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .preset-card .preset-desc {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        .device-save-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 2px;
+        }
+
+        .confirm-save-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 22px rgba(6, 182, 212, 0.14);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .confirm-save-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .confirm-save-btn:disabled {
+            cursor: default;
+            opacity: 0.6;
+            transform: none;
+        }
+
+        .device-save-status {
+            min-height: 18px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Sound Mixer Sliders */
+        .mixer-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.015);
+            padding: 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        @media (max-width: 580px) {
+            .mixer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sound-card {
+            background: rgba(18, 14, 36, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sound-card:hover {
+            border-color: rgba(255, 255, 255, 0.08);
+            background: rgba(18, 14, 36, 0.5);
+        }
+
+        .sound-card.active {
+            border-color: rgba(139, 92, 246, 0.2);
+            background: rgba(139, 92, 246, 0.04);
+        }
+
+        .sound-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sound-name-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sound-icon {
+            font-size: 15px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .sound-card.active .sound-icon {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--primary);
+        }
+
+        .sound-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .mute-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            opacity: 0.5;
+            transition: all 0.2s ease;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .mute-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .sound-card.active .mute-btn {
+            opacity: 0.7;
+        }
+        
+        .sound-card.active .mute-btn:hover {
+            opacity: 1;
+        }
+        
+        .mute-btn.muted {
+            color: #ef4444 !important;
+            opacity: 1 !important;
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* Custom Slider Styling */
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .vol-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .vol-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            border: 2px solid var(--bg-color);
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+        }
+
+        .vol-slider:hover::-webkit-slider-thumb {
+            background: var(--text-main);
+            transform: scale(1.2);
+        }
+
+        .sound-card.active .vol-slider::-webkit-slider-thumb {
+            background: var(--primary);
+            border-color: #1e1b4b;
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .sound-card.active .vol-slider {
+            background: linear-gradient(to right, var(--primary) 0%, rgba(139, 92, 246, 0.2) 100%);
+        }
+
+        .vol-percent {
+            font-size: 9px;
+            color: var(--text-muted);
+            width: 22px;
+            text-align: right;
+            font-family: monospace;
+        }
+
+        /* BOTTOM ROW: Playback controls, sleep timer */
+        .bottom-bar {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 650px) {
+            .bottom-bar {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+        }
+
+        .timer-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .timer-select-wrap {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 10px;
+        }
+
+        .timer-opt {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .timer-opt:hover {
+            color: var(--text-main);
+        }
+
+        .timer-opt.active {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .master-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* The Big Play Button */
+        .play-btn-outer {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.12);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .play-btn-outer:hover {
+            transform: scale(1.08);
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .play-btn-outer.playing {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+
+        .play-btn-inner {
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .play-btn-outer.playing .play-btn-inner {
+            transform: scale(0.95);
+        }
+
+        .play-icon, .pause-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .pause-icon {
+            display: none;
+        }
+
+        .play-btn-outer.playing .play-icon {
+            display: none;
+        }
+
+        .play-btn-outer.playing .pause-icon {
+            display: block;
+        }
+
+        /* Master Volume Area */
+        .master-vol-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 180px;
+        }
+
+        .master-vol-icon {
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Keyframe animations */
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        /* Info & Tips footer */
+        .tips-footer {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.6;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .tips-footer a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+        
+        .tips-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Fade-out countdown timer tooltip overlay */
+        .countdown-overlay {
+            font-size: 12px;
+            color: var(--secondary);
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: none;
+            align-items: center;
+            gap: 5px;
+            font-family: monospace;
+        }
+        
+        .countdown-overlay.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Orbs -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
+    <!-- Star Particle Layer -->
+    <div class="stars"></div>
+
+    <!-- Main Container -->
+    <div class="app-wrapper">
+        
+        <!-- Header -->
+        <header>
+            <div class="logo-area">
+                <h1>深眠潮汐 · SleepTide</h1>
+                <p>DreamGuardian 自适应大自然助眠音乐空间</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div id="countdown-display" class="countdown-overlay">
+                    <svg style="width:12px;height:12px;fill:currentColor;" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <span id="countdown-time">00:00</span>
+                </div>
+                <div id="status-badge" class="status-badge">已静息</div>
+            </div>
+        </header>
+
+        <!-- Workspace grid -->
+        <div class="workspace-grid">
+            
+            <!-- Left Side: Breathing Guidance & Visualizer -->
+            <div class="left-col">
+                <canvas id="visualizer"></canvas>
+                
+                <!-- Breathing Circle -->
+                <div class="breathing-area">
+                    <div id="breathing-glow" class="breathing-glow"></div>
+                    <div id="breathing-ring-1" class="breathing-ring ring-1"></div>
+                    <div id="breathing-ring-2" class="breathing-ring ring-2"></div>
+                    <div id="breathing-circle" class="breathing-circle">
+                        <span id="breath-text">静待</span>
+                        <span id="breath-timer">0秒</span>
+                        <span id="breath-subtext">点击下方 Play 开启您的深度睡眠之旅</span>
+                    </div>
+                </div>
+
+                <!-- Breathing Modes Selector -->
+                <div class="breath-controls">
+                    <div class="breath-title-row">
+                        <span>律动呼吸引导</span>
+                        <span id="breath-mode-label">舒缓呼吸</span>
+                    </div>
+                    <div class="breath-modes">
+                        <button class="breath-btn active" onclick="switchBreathMode('relax', this)">舒缓 5-5</button>
+                        <button class="breath-btn" onclick="switchBreathMode('box', this)">箱式 4-4</button>
+                        <button class="breath-btn" onclick="switchBreathMode('deep', this)">深眠 4-7-8</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Mixers and Presets -->
+            <div class="right-col">
+                
+                <!-- Presets -->
+                <div class="section-block">
+                    <div class="section-title">
+                        <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        <span>助眠音乐场景</span>
+                    </div>
+                    <div class="presets-grid">
+                        <button id="preset-ppm" class="preset-card active" onclick="loadPreset('ppm')">
+                            <span class="preset-name">默认律动</span>
+                            <span class="preset-desc">溪流鸟鸣与温热轻音乐交织，配合柔和呼吸节奏</span>
+                        </button>
+                        <button id="preset-ocean" class="preset-card" onclick="loadPreset('ocean')">
+                            <span class="preset-name">深海潮汐</span>
+                            <span class="preset-desc">深邃的舒缓音垫与潮水涨落，抚平浮躁</span>
+                        </button>
+                        <button id="preset-forest" class="preset-card" onclick="loadPreset('forest')">
+                            <span class="preset-name">林海晨曦</span>
+                            <span class="preset-desc">山谷轻风吹拂风铃，松鼠与晨鸟啼鸣</span>
+                        </button>
+                        <button id="preset-rain" class="preset-card" onclick="loadPreset('rain')">
+                            <span class="preset-name">雨夜入眠</span>
+                            <span class="preset-desc">细雨打在窗台，伴着微弱的水流和声响</span>
+                        </button>
+                        <button id="preset-zen" class="preset-card" onclick="loadPreset('zen')">
+                            <span class="preset-name">太虚禅音</span>
+                            <span class="preset-desc">空灵风铃与延时钢琴，极度静心冥想</span>
+                        </button>
+                        <button id="preset-empty" class="preset-card" onclick="loadPreset('empty')">
+                            <span class="preset-name">放空归零</span>
+                            <span class="preset-desc">自定义音量滑块，调配专属于您的梦境</span>
+                        </button>
+                    </div>
+                    <div class="device-save-row">
+                        <button id="confirm-device-preset" class="confirm-save-btn" onclick="confirmDevicePreset()">确认设为助眠音乐</button>
+                        <button id="device-speaker-play" class="confirm-save-btn" style="background: linear-gradient(135deg, #0ea5e9, #14b8a6);" onclick="playDeviceSpeaker()">播放到 ES8311 扬声器</button>
+                        <span id="device-save-status" class="device-save-status">当前仅预览，确认后设备助眠时会使用该音乐。</span>
+                    </div>
+                </div>
+
+                <!-- Custom Mix Mixer -->
+                <div class="section-block">
+                    <div class="section-title">
+                        <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+                        <span>声音成分合成器</span>
+                    </div>
+                    <div class="mixer-container">
+                        
+                        <!-- Sound 1: Pad -->
+                        <div class="sound-card" id="card-pad">
+                            <div class="sound-info">
+                                <div class="sound-name-wrap">
+                                    <span class="sound-icon">🎹</span>
+                                    <span class="sound-label">温热轻音乐</span>
+                                </div>
+                                <button class="mute-btn" onclick="toggleMute('pad', this)">
+                                    <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                            <div class="slider-wrapper">
+                                <input type="range" class="vol-slider" id="slide-pad" min="0" max="100" value="80" oninput="updateSynthVol('pad', this.value)">
+                                <span class="vol-percent" id="lbl-pad">80%</span>
+                            </div>
+                        </div>
+
+                        <!-- Sound 2: Piano -->
+                        <div class="sound-card" id="card-piano">
+                            <div class="sound-info">
+                                <div class="sound-name-wrap">
+                                    <span class="sound-icon">✨</span>
+                                    <span class="sound-label">清澈琴音</span>
+                                </div>
+                                <button class="mute-btn" onclick="toggleMute('piano', this)">
+                                    <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                            <div class="slider-wrapper">
+                                <input type="range" class="vol-slider" id="slide-piano" min="0" max="100" value="60" oninput="updateSynthVol('piano', this.value)">
+                                <span class="vol-percent" id="lbl-piano">60%</span>
+                            </div>
+                        </div>
+
+                        <!-- Sound 3: Waves -->
+                        <div class="sound-card" id="card-wave">
+                            <div class="sound-info">
+                                <div class="sound-name-wrap">
+                                    <span class="sound-icon">🌊</span>
+                                    <span class="sound-label">深海潮汐</span>
+                                </div>
+                                <button class="mute-btn" onclick="toggleMute('wave', this)">
+                                    <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                            <div class="slider-wrapper">
+                                <input type="range" class="vol-slider" id="slide-wave" min="0" max="100" value="15" oninput="updateSynthVol('wave', this.value)">
+                                <span class="vol-percent" id="lbl-wave">15%</span>
+                            </div>
+                        </div>
+
+                        <!-- Sound 4: Rain -->
+                        <div class="sound-card" id="card-rain">
+                            <div class="sound-info">
+                                <div class="sound-name-wrap">
+                                    <span class="sound-icon">🌧️</span>
+                                    <span class="sound-label">微雨沙沙</span>
+                                </div>
+                                <button class="mute-btn" onclick="toggleMute('rain', this)">
+                                    <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                            <div class="slider-wrapper">
+                                <input type="range" class="vol-slider" id="slide-rain" min="0" max="100" value="0" oninput="updateSynthVol('rain', this.value)">
+                                <span class="vol-percent" id="lbl-rain">0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Sound 5: Stream -->
+                        <div class="sound-card" id="card-stream">
+                            <div class="sound-info">
+                                <div class="sound-name-wrap">
+                                    <span class="sound-icon">💧</span>
+                                    <span class="sound-label">山泉溪流</span>
+                                </div>
+                                <button class="mute-btn" onclick="toggleMute('stream', this)">
+                                    <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                            <div class="slider-wrapper">
+                                <input type="range" class="vol-slider" id="slide-stream" min="0" max="100" value="40" oninput="updateSynthVol('stream', this.value)">
+                                <span class="vol-percent" id="lbl-stream">40%</span>
+                            </div>
+                        </div>
+
+                        <!-- Sound 6: Birds -->
+                        <div class="sound-card" id="card-birds">
+                            <div class="sound-info">
+                                <div class="sound-name-wrap">
+                                    <span class="sound-icon">🐦</span>
+                                    <span class="sound-label">林间晨鸣</span>
+                                </div>
+                                <button class="mute-btn" onclick="toggleMute('birds', this)">
+                                    <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                            <div class="slider-wrapper">
+                                <input type="range" class="vol-slider" id="slide-birds" min="0" max="100" value="30" oninput="updateSynthVol('birds', this.value)">
+                                <span class="vol-percent" id="lbl-birds">30%</span>
+                            </div>
+                        </div>
+
+                        <!-- Sound 7: Wind -->
+                        <div class="sound-card" id="card-wind">
+                            <div class="sound-info">
+                                <div class="sound-name-wrap">
+                                    <span class="sound-icon">🍃</span>
+                                    <span class="sound-label">幽谷晚风</span>
+                                </div>
+                                <button class="mute-btn" onclick="toggleMute('wind', this)">
+                                    <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                            <div class="slider-wrapper">
+                                <input type="range" class="vol-slider" id="slide-wind" min="0" max="100" value="15" oninput="updateSynthVol('wind', this.value)">
+                                <span class="vol-percent" id="lbl-wind">15%</span>
+                            </div>
+                        </div>
+
+                        <!-- Sound 8: Chimes -->
+                        <div class="sound-card" id="card-chimes">
+                            <div class="sound-info">
+                                <div class="sound-name-wrap">
+                                    <span class="sound-icon">🎐</span>
+                                    <span class="sound-label">空灵风铃</span>
+                                </div>
+                                <button class="mute-btn" onclick="toggleMute('chimes', this)">
+                                    <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                            </div>
+                            <div class="slider-wrapper">
+                                <input type="range" class="vol-slider" id="slide-chimes" min="0" max="100" value="40" oninput="updateSynthVol('chimes', this.value)">
+                                <span class="vol-percent" id="lbl-chimes">40%</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom play bar -->
+        <div class="bottom-bar">
+            
+            <!-- Sleep Timer -->
+            <div class="timer-section">
+                <span class="timer-label">睡眠定时 (渐隐退出):</span>
+                <div class="timer-select-wrap">
+                    <button class="timer-opt active" onclick="setSleepTimer(0, this)">无限制</button>
+                    <button class="timer-opt" onclick="setSleepTimer(15, this)">15分钟</button>
+                    <button class="timer-opt" onclick="setSleepTimer(30, this)">30分钟</button>
+                    <button class="timer-opt" onclick="setSleepTimer(45, this)">45分钟</button>
+                    <button class="timer-opt" onclick="setSleepTimer(60, this)">60分钟</button>
+                </div>
+            </div>
+
+            <!-- Play & Master Vol -->
+            <div class="master-controls">
+                
+                <!-- Main Play Button -->
+                <div id="btn-play" class="play-btn-outer" onclick="togglePlayState()">
+                    <div class="play-btn-inner">
+                        <!-- Play Icon SVG -->
+                        <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <!-- Pause Icon SVG -->
+                        <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </div>
+                </div>
+
+                <!-- Master Volume Slider -->
+                <div class="master-vol-wrap">
+                    <span class="master-vol-icon">
+                        <svg style="width:18px;height:18px;fill:currentColor;" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                    </span>
+                    <input type="range" class="vol-slider" id="slide-master" min="0" max="100" value="70" oninput="updateMasterVolume(this.value)">
+                    <span class="vol-percent" id="lbl-master">70%</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Tips and explanations -->
+        <div class="tips-footer">
+            <span>✨ 科学助眠建议：通过柔和律动与呼吸同步，逐步降低紧张感。请尝试配合页面中央的<b>呼吸灯</b>，闭上眼，跟随频率进行一吸一呼。</span>
+            <span>💡 提示：本系统使用 Web Audio 节点进行<b>实时数学波形合成</b>，完全在本地运行，零网络依赖。如果感到杂音，请调小对应滑块。</span>
+        </div>
+
+    </div>
+
+    <script>
+        // --- AUDIO ENGINE CORE ---
+        
+        let audioCtx = null;
+        let masterGainNode = null;
+        let analyser = null;
+        let isAudioPlaying = false;
+        
+        // Synth Instances
+        let synths = {
+            pad: null,
+            piano: null,
+            wave: null,
+            rain: null,
+            stream: null,
+            birds: null,
+            wind: null,
+            chimes: null
+        };
+
+        // Mute state
+        let muteStates = {
+            pad: false,
+            piano: false,
+            wave: false,
+            rain: false,
+            stream: false,
+            birds: false,
+            wind: false,
+            chimes: false
+        };
+
+        // Current Volumes set by user (0.0 to 1.0)
+        let volSettings = {
+            pad: 0.8,
+            piano: 0.6,
+            wave: 0.15,
+            rain: 0.0,
+            stream: 0.4,
+            birds: 0.3,
+            wind: 0.15,
+            chimes: 0.4
+        };
+
+        // Preset databases
+        const presets = {
+            ppm: { pad: 0.8, piano: 0.6, wave: 0.15, rain: 0.0, stream: 0.4, birds: 0.3, wind: 0.15, chimes: 0.4 },
+            ocean: { pad: 0.9, piano: 0.3, wave: 0.8, rain: 0.0, stream: 0.0, birds: 0.0, wind: 0.2, chimes: 0.0 },
+            forest: { pad: 0.4, piano: 0.7, wave: 0.0, rain: 0.0, stream: 0.6, birds: 0.85, wind: 0.4, chimes: 0.5 },
+            rain: { pad: 0.6, piano: 0.4, wave: 0.0, rain: 0.8, stream: 0.2, birds: 0.0, wind: 0.3, chimes: 0.0 },
+            zen: { pad: 0.85, piano: 0.7, wave: 0.0, rain: 0.0, stream: 0.0, birds: 0.0, wind: 0.1, chimes: 0.85 },
+            empty: { pad: 0.0, piano: 0.0, wave: 0.0, rain: 0.0, stream: 0.0, birds: 0.0, wind: 0.0, chimes: 0.0 }
+        };
+
+        // --- HELPER FUNCTION: NOISE GENERATION ---
+        function createNoiseBuffer(ctx, type, duration = 5) {
+            const bufferSize = duration * ctx.sampleRate;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            if (type === 'white') {
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+            } else if (type === 'pink') {
+                // Pink noise approximation (Paul Kellet's refined method)
+                let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                    data[i] *= 0.11; // rescue headroom
+                    b6 = white * 0.115926;
+                }
+            } else if (type === 'brown') {
+                let lastOut = 0.0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    data[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = data[i];
+                    data[i] *= 3.5; // Gain compensation
+                }
+            }
+            return buffer;
+        }
+
+        // --- SYNTHESIZER 1: AMBIENT PAD (温热轻音乐) ---
+        class AmbientPadSynth {
+            constructor(ctx, dest) {
+                this.ctx = ctx;
+                this.dest = dest;
+                this.isPlaying = false;
+                this.chordTimer = null;
+                this.activeOscs = [];
+                this.gainNode = this.ctx.createGain();
+                this.gainNode.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.gainNode.connect(this.dest);
+                
+                // Warm Chords in Eb Major:
+                // Eb Maj, Ab Maj, Bb Maj, Cm 7
+                this.chords = [
+                    [77.78, 155.56, 196.00, 233.08, 311.13], // Eb Major
+                    [82.41, 155.56, 207.65, 261.63, 311.13], // Ab Major
+                    [116.54, 174.61, 233.08, 293.66, 349.23], // Bb Major
+                    [65.41, 130.81, 155.56, 233.08, 261.63]  // C Minor 7
+                ];
+                this.chordIdx = 0;
+            }
+
+            start() {
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+                
+                // Master fade in
+                const targetVol = muteStates.pad ? 0 : volSettings.pad * 0.35;
+                this.gainNode.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.gainNode.gain.linearRampToValueAtTime(targetVol, this.ctx.currentTime + 3.0);
+                
+                this.playChord();
+            }
+
+            playChord() {
+                if (!this.isPlaying) return;
+                const now = this.ctx.currentTime;
+                const duration = 12.0; // 12 seconds per chord
+                const notes = this.chords[this.chordIdx];
+                
+                // Fade out previous oscillators
+                const oldOscs = this.activeOscs;
+                this.activeOscs = [];
+                
+                if (oldOscs.length > 0) {
+                    oldOscs.forEach(o => {
+                        o.gain.gain.setValueAtTime(o.gain.gain.value, now);
+                        o.gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.5);
+                        setTimeout(() => { try { o.osc.stop(); } catch(e){} }, 4000);
+                    });
+                }
+
+                // Play new chord note group
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const oscGain = this.ctx.createGain();
+                    const filter = this.ctx.createBiquadFilter();
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+                    osc.detune.value = (Math.random() * 8) - 4; // Chorus detuning
+                    
+                    filter.type = 'lowpass';
+                    // Deep base has lower cutoff, higher notes can breathe a bit more
+                    filter.frequency.value = idx === 0 ? 180 : 350;
+                    filter.Q.value = 1.0;
+                    
+                    oscGain.gain.setValueAtTime(0, now);
+                    oscGain.gain.linearRampToValueAtTime(0.2, now + 3.0); // slow attack
+                    
+                    osc.connect(filter);
+                    filter.connect(oscGain);
+                    oscGain.connect(this.gainNode);
+                    
+                    osc.start(now);
+                    this.activeOscs.push({ osc, gain: oscGain });
+                });
+
+                this.chordIdx = (this.chordIdx + 1) % this.chords.length;
+                this.chordTimer = setTimeout(() => this.playChord(), (duration - 3.5) * 1000);
+            }
+
+            stop() {
+                if (!this.isPlaying) return;
+                this.isPlaying = false;
+                clearTimeout(this.chordTimer);
+                
+                const now = this.ctx.currentTime;
+                this.gainNode.gain.cancelScheduledValues(now);
+                this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+                this.gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+                
+                this.activeOscs.forEach(o => {
+                    try {
+                        o.gain.gain.cancelScheduledValues(now);
+                        o.gain.gain.setValueAtTime(o.gain.gain.value, now);
+                        o.gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+                        setTimeout(() => o.osc.stop(), 2500);
+                    } catch(e){}
+                });
+                this.activeOscs = [];
+            }
+
+            setVolume(val) {
+                if (this.gainNode && !muteStates.pad) {
+                    this.gainNode.gain.linearRampToValueAtTime(val * 0.35, this.ctx.currentTime + 0.15);
+                }
+            }
+
+            setMute(mute) {
+                if (this.gainNode) {
+                    this.gainNode.gain.linearRampToValueAtTime(mute ? 0 : volSettings.pad * 0.35, this.ctx.currentTime + 0.15);
+                }
+            }
+        }
+
+        // --- SYNTHESIZER 2: CLEAR PIANO (清澈琴音) ---
+        class PianoSynth {
+            constructor(ctx, dest) {
+                this.ctx = ctx;
+                this.dest = dest;
+                this.isPlaying = false;
+                this.melodyTimer = null;
+                
+                // Echo feedback delay
+                this.delay = this.ctx.createDelay(1.0);
+                this.delay.delayTime.value = 0.6; // 600ms echo
+                this.delayFeedback = this.ctx.createGain();
+                this.delayFeedback.gain.value = 0.4;
+                
+                this.delay.connect(this.delayFeedback);
+                this.delayFeedback.connect(this.delay);
+                this.delay.connect(this.dest);
+                
+                // Pentatonic melody notes Eb Major
+                this.notes = [311.13, 349.23, 392.00, 466.16, 523.25, 622.25, 698.46];
+            }
+
+            start() {
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+                this.triggerMelody();
+            }
+
+            triggerMelody() {
+                if (!this.isPlaying) return;
+                
+                const delayMs = Math.random() * 4000 + 3500; // random 3.5s - 7.5s interval
+                this.melodyTimer = setTimeout(() => {
+                    this.playNote();
+                    this.triggerMelody();
+                }, delayMs);
+            }
+
+            playNote() {
+                if (muteStates.piano || volSettings.piano === 0) return;
+                
+                const now = this.ctx.currentTime;
+                const freq = this.notes[Math.floor(Math.random() * this.notes.length)];
+                
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
+                
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                
+                filter.type = 'lowpass';
+                filter.frequency.value = 900; // warm bell pluck
+                
+                const velocity = volSettings.piano * 0.16;
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(velocity, now + 0.04); // soft attack
+                gain.gain.exponentialRampToValueAtTime(0.00001, now + 2.8); // long decay
+                
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.dest);
+                gain.connect(this.delay);
+                
+                osc.start(now);
+                osc.stop(now + 3.0);
+            }
+
+            stop() {
+                this.isPlaying = false;
+                clearTimeout(this.melodyTimer);
+            }
+            
+            setVolume(val) {}
+            setMute(mute) {}
+        }
+
+        // --- SYNTHESIZER 3: DEEP WAVES (深海潮汐) ---
+        class WaveSynth {
+            constructor(ctx, dest) {
+                this.ctx = ctx;
+                this.dest = dest;
+                this.isPlaying = false;
+                this.lfoTimer = null;
+                this.noiseBuffer = createNoiseBuffer(ctx, 'brown', 6);
+                
+                this.source = null;
+                this.filter = null;
+                this.gainNode = null;
+            }
+
+            start() {
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+                
+                this.source = this.ctx.createBufferSource();
+                this.source.buffer = this.noiseBuffer;
+                this.source.loop = true;
+                
+                this.filter = this.ctx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.value = 180;
+                
+                this.gainNode = this.ctx.createGain();
+                this.gainNode.gain.setValueAtTime(0, this.ctx.currentTime);
+                
+                this.source.connect(this.filter);
+                this.filter.connect(this.gainNode);
+                this.gainNode.connect(this.dest);
+                
+                this.source.start(0);
+                this.animateWave();
+            }
+
+            animateWave() {
+                if (!this.isPlaying) return;
+                const now = this.ctx.currentTime;
+                const cycle = 9.0; // 9 seconds ocean wave roll
+                
+                const targetMax = muteStates.wave ? 0 : volSettings.wave * 0.7;
+                const targetMin = muteStates.wave ? 0 : volSettings.wave * 0.1;
+                
+                this.gainNode.gain.cancelScheduledValues(now);
+                this.filter.frequency.cancelScheduledValues(now);
+                
+                this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+                this.gainNode.gain.exponentialRampToValueAtTime(targetMax + 0.005, now + 4.0); // swell up
+                this.filter.frequency.setValueAtTime(this.filter.frequency.value, now);
+                this.filter.frequency.exponentialRampToValueAtTime(450, now + 4.0); // brighter foam
+                
+                this.gainNode.gain.exponentialRampToValueAtTime(targetMin + 0.002, now + 9.0); // swell down
+                this.filter.frequency.exponentialRampToValueAtTime(130, now + 9.0); // deep dark rumble
+                
+                this.lfoTimer = setTimeout(() => this.animateWave(), cycle * 1000);
+            }
+
+            stop() {
+                if (!this.isPlaying) return;
+                this.isPlaying = false;
+                clearTimeout(this.lfoTimer);
+                
+                if (this.gainNode) {
+                    this.gainNode.gain.cancelScheduledValues(this.ctx.currentTime);
+                    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.ctx.currentTime);
+                    this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 2.0);
+                    
+                    const src = this.source;
+                    setTimeout(() => { try { src.stop(); } catch(e){} }, 2500);
+                }
+            }
+
+            setVolume(val) {
+                // Wave sweeps volumes dynamically via animation loop, 
+                // so we just cancel and re-trigger animation to register volume change instantly
+                if (this.isPlaying) {
+                    this.animateWave();
+                }
+            }
+
+            setMute(mute) {
+                if (this.isPlaying) {
+                    this.animateWave();
+                }
+            }
+        }
+
+        // --- SYNTHESIZER 4: GENTLE RAIN (微雨沙沙) ---
+        class RainSynth {
+            constructor(ctx, dest) {
+                this.ctx = ctx;
+                this.dest = dest;
+                this.isPlaying = false;
+                this.crackleTimer = null;
+                this.pinkBuffer = createNoiseBuffer(ctx, 'pink', 4);
+                this.whiteBuffer = createNoiseBuffer(ctx, 'white', 2);
+                
+                this.source = null;
+                this.filter = null;
+                this.gainNode = null;
+            }
+
+            start() {
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+                
+                // Steady background rain (filtered pink noise)
+                this.source = this.ctx.createBufferSource();
+                this.source.buffer = this.pinkBuffer;
+                this.source.loop = true;
+                
+                this.filter = this.ctx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.value = 650;
+                
+                this.gainNode = this.ctx.createGain();
+                const startGain = muteStates.rain ? 0 : volSettings.rain * 0.45;
+                this.gainNode.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.gainNode.gain.linearRampToValueAtTime(startGain, this.ctx.currentTime + 2.0);
+                
+                this.source.connect(this.filter);
+                this.filter.connect(this.gainNode);
+                this.gainNode.connect(this.dest);
+                this.source.start(0);
+                
+                this.triggerRaindrops();
+            }
+
+            triggerRaindrops() {
+                if (!this.isPlaying) return;
+                
+                // heavy/light rain droplet density
+                const delay = Math.random() * 35 + 15;
+                this.crackleTimer = setTimeout(() => {
+                    this.playDrop();
+                    this.triggerRaindrops();
+                }, delay);
+            }
+
+            playDrop() {
+                if (muteStates.rain || volSettings.rain === 0) return;
+                
+                const now = this.ctx.currentTime;
+                const dropSrc = this.ctx.createBufferSource();
+                dropSrc.buffer = this.whiteBuffer;
+                
+                const dropFilter = this.ctx.createBiquadFilter();
+                dropFilter.type = 'bandpass';
+                dropFilter.frequency.value = Math.random() * 2500 + 1600; // splatter frequency
+                dropFilter.Q.value = 7.0;
+                
+                const dropGain = this.ctx.createGain();
+                const vol = (Math.random() * 0.12 + 0.02) * volSettings.rain;
+                
+                dropGain.gain.setValueAtTime(0, now);
+                dropGain.gain.linearRampToValueAtTime(vol, now + 0.002);
+                dropGain.gain.exponentialRampToValueAtTime(0.0001, now + Math.random() * 0.03 + 0.015);
+                
+                dropSrc.connect(dropFilter);
+                dropFilter.connect(dropGain);
+                dropGain.connect(this.dest);
+                
+                dropSrc.start(now, Math.random() * 1.5);
+                dropSrc.stop(now + 0.05);
+            }
+
+            stop() {
+                if (!this.isPlaying) return;
+                this.isPlaying = false;
+                clearTimeout(this.crackleTimer);
+                
+                if (this.gainNode) {
+                    this.gainNode.gain.cancelScheduledValues(this.ctx.currentTime);
+                    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.ctx.currentTime);
+                    this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 1.5);
+                    const src = this.source;
+                    setTimeout(() => { try { src.stop(); } catch(e){} }, 2000);
+                }
+            }
+
+            setVolume(val) {
+                if (this.gainNode && !muteStates.rain) {
+                    this.gainNode.gain.linearRampToValueAtTime(val * 0.45, this.ctx.currentTime + 0.1);
+                }
+            }
+
+            setMute(mute) {
+                if (this.gainNode) {
+                    this.gainNode.gain.linearRampToValueAtTime(mute ? 0 : volSettings.rain * 0.45, this.ctx.currentTime + 0.1);
+                }
+            }
+        }
+
+        // --- SYNTHESIZER 5: MOUNTAIN STREAM (山泉溪流) ---
+        class StreamSynth {
+            constructor(ctx, dest) {
+                this.ctx = ctx;
+                this.dest = dest;
+                this.isPlaying = false;
+                this.noiseBuffer = createNoiseBuffer(ctx, 'pink', 4);
+                this.source = null;
+                this.gainNode = null;
+                this.filters = [];
+                this.lfos = [];
+            }
+
+            start() {
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+                
+                this.source = this.ctx.createBufferSource();
+                this.source.buffer = this.noiseBuffer;
+                this.source.loop = true;
+                
+                this.gainNode = this.ctx.createGain();
+                const startGain = muteStates.stream ? 0 : volSettings.stream * 0.35;
+                this.gainNode.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.gainNode.gain.linearRampToValueAtTime(startGain, this.ctx.currentTime + 2.0);
+                
+                // 3 Resonant bandpass filters with frequency mod LFOs for bubble/gurgle water textures
+                const bpFreqs = [380, 520, 720];
+                this.filters = [];
+                this.lfos = [];
+                
+                bpFreqs.forEach((freq, i) => {
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.value = freq;
+                    filter.Q.value = 16.0; // high resonance
+                    
+                    this.source.connect(filter);
+                    filter.connect(this.gainNode);
+                    this.filters.push(filter);
+                    
+                    // Modulate filter freq
+                    const lfo = this.ctx.createOscillator();
+                    lfo.frequency.value = 1.0 + (i * 0.5) + Math.random() * 0.3; // 1Hz - 2.5Hz
+                    
+                    const lfoGain = this.ctx.createGain();
+                    lfoGain.gain.value = 60 + i * 20; // range 60-100Hz fluctuation
+                    
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(filter.frequency);
+                    lfo.start();
+                    
+                    this.lfos.push({ osc: lfo, gain: lfoGain });
+                });
+                
+                this.gainNode.connect(this.dest);
+                this.source.start(0);
+            }
+
+            stop() {
+                if (!this.isPlaying) return;
+                this.isPlaying = false;
+                
+                this.lfos.forEach(l => { try { l.osc.stop(); } catch(e){} });
+                
+                if (this.gainNode) {
+                    this.gainNode.gain.cancelScheduledValues(this.ctx.currentTime);
+                    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.ctx.currentTime);
+                    this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 1.5);
+                    const src = this.source;
+                    setTimeout(() => { try { src.stop(); } catch(e){} }, 2000);
+                }
+            }
+
+            setVolume(val) {
+                if (this.gainNode && !muteStates.stream) {
+                    this.gainNode.gain.linearRampToValueAtTime(val * 0.35, this.ctx.currentTime + 0.1);
+                }
+            }
+
+            setMute(mute) {
+                if (this.gainNode) {
+                    this.gainNode.gain.linearRampToValueAtTime(mute ? 0 : volSettings.stream * 0.35, this.ctx.currentTime + 0.1);
+                }
+            }
+        }
+
+        // --- SYNTHESIZER 6: FOREST BIRDS (林间晨鸣) ---
+        class BirdsSynth {
+            constructor(ctx, dest) {
+                this.ctx = ctx;
+                this.dest = dest;
+                this.isPlaying = false;
+                this.timer = null;
+            }
+
+            start() {
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+                this.scheduleNext();
+            }
+
+            scheduleNext() {
+                if (!this.isPlaying) return;
+                const delay = Math.random() * 5500 + 4500; // chirp every 4.5s - 10s
+                this.timer = setTimeout(() => {
+                    this.chirp();
+                    this.scheduleNext();
+                }, delay);
+            }
+
+            chirp() {
+                if (muteStates.birds || volSettings.birds === 0) return;
+                
+                const now = this.ctx.currentTime;
+                const maxVol = volSettings.birds * 0.14;
+                const chirpType = Math.floor(Math.random() * 3);
+                
+                if (chirpType === 0) {
+                    // Double peep peep
+                    this.playSingleChirp(now, 2000, 1300, 0.08, maxVol);
+                    this.playSingleChirp(now + 0.14, 2100, 1400, 0.08, maxVol);
+                } else if (chirpType === 1) {
+                    // Up-down slide
+                    this.playSingleChirp(now, 1500, 2300, 0.14, maxVol * 0.85);
+                    this.playSingleChirp(now + 0.22, 1400, 2100, 0.16, maxVol * 0.7);
+                } else {
+                    // Rapid short high chirps
+                    this.playSingleChirp(now, 2800, 1800, 0.05, maxVol * 0.6);
+                    this.playSingleChirp(now + 0.08, 2700, 1700, 0.05, maxVol * 0.6);
+                    this.playSingleChirp(now + 0.16, 2900, 1900, 0.06, maxVol * 0.6);
+                }
+            }
+
+            playSingleChirp(time, startFreq, endFreq, dur, volume) {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(startFreq, time);
+                osc.frequency.exponentialRampToValueAtTime(endFreq, time + dur);
+                
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(volume, time + 0.005);
+                gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+                
+                filter.type = 'bandpass';
+                filter.frequency.value = (startFreq + endFreq) / 2;
+                filter.Q.value = 1.2;
+                
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.dest);
+                
+                osc.start(time);
+                osc.stop(time + dur + 0.05);
+            }
+
+            stop() {
+                this.isPlaying = false;
+                clearTimeout(this.timer);
+            }
+
+            setVolume(val) {}
+            setMute(mute) {}
+        }
+
+        // --- SYNTHESIZER 7: GENTLE WIND (幽谷晚风) ---
+        class WindSynth {
+            constructor(ctx, dest) {
+                this.ctx = ctx;
+                this.dest = dest;
+                this.isPlaying = false;
+                this.noiseBuffer = createNoiseBuffer(ctx, 'pink', 6);
+                this.source = null;
+                this.filter = null;
+                this.gainNode = null;
+                this.lfo = null;
+            }
+
+            start() {
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+                
+                this.source = this.ctx.createBufferSource();
+                this.source.buffer = this.noiseBuffer;
+                this.source.loop = true;
+                
+                this.filter = this.ctx.createBiquadFilter();
+                this.filter.type = 'bandpass';
+                this.filter.frequency.value = 350;
+                this.filter.Q.value = 2.5; // narrow band for wind whistle
+                
+                this.gainNode = this.ctx.createGain();
+                this.gainNode.gain.setValueAtTime(0, this.ctx.currentTime);
+                
+                const targetVal = muteStates.wind ? 0 : volSettings.wind * 0.35;
+                this.gainNode.gain.linearRampToValueAtTime(targetVal, this.ctx.currentTime + 3.0);
+                
+                // Slow LFO for sweeping gusts
+                this.lfo = this.ctx.createOscillator();
+                this.lfo.frequency.value = 0.06; // 16 second cycles
+                
+                const lfoGain = this.ctx.createGain();
+                lfoGain.gain.value = 140; // modulate +/- 140Hz
+                
+                this.lfo.connect(lfoGain);
+                lfoGain.connect(this.filter.frequency);
+                
+                this.source.connect(this.filter);
+                this.filter.connect(this.gainNode);
+                this.gainNode.connect(this.dest);
+                
+                this.lfo.start();
+                this.source.start(0);
+            }
+
+            stop() {
+                if (!this.isPlaying) return;
+                this.isPlaying = false;
+                try { this.lfo.stop(); } catch(e){}
+                
+                if (this.gainNode) {
+                    this.gainNode.gain.cancelScheduledValues(this.ctx.currentTime);
+                    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.ctx.currentTime);
+                    this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 1.5);
+                    const src = this.source;
+                    setTimeout(() => { try { src.stop(); } catch(e){} }, 2000);
+                }
+            }
+
+            setVolume(val) {
+                if (this.gainNode && !muteStates.wind) {
+                    this.gainNode.gain.linearRampToValueAtTime(val * 0.35, this.ctx.currentTime + 0.1);
+                }
+            }
+
+            setMute(mute) {
+                if (this.gainNode) {
+                    this.gainNode.gain.linearRampToValueAtTime(mute ? 0 : volSettings.wind * 0.35, this.ctx.currentTime + 0.1);
+                }
+            }
+        }
+
+        // --- SYNTHESIZER 8: METAL WIND CHIMES (空灵风铃) ---
+        class ChimesSynth {
+            constructor(ctx, dest) {
+                this.ctx = ctx;
+                this.dest = dest;
+                this.isPlaying = false;
+                this.timer = null;
+                // Pentatonic metallic tube frequencies
+                this.chimeFreqs = [880, 987, 1174, 1318, 1567, 1760, 1975, 2349];
+            }
+
+            start() {
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+                this.scheduleNext();
+            }
+
+            scheduleNext() {
+                if (!this.isPlaying) return;
+                const delay = Math.random() * 11000 + 13000; // rings every 13s - 24s
+                this.timer = setTimeout(() => {
+                    this.ring();
+                    this.scheduleNext();
+                }, delay);
+            }
+
+            ring() {
+                if (muteStates.chimes || volSettings.chimes === 0) return;
+                
+                const now = this.ctx.currentTime;
+                const count = Math.floor(Math.random() * 3) + 3; // 3 to 5 metal rods hit
+                
+                for (let i = 0; i < count; i++) {
+                    const freq = this.chimeFreqs[Math.floor(Math.random() * this.chimeFreqs.length)];
+                    const stagger = i * (Math.random() * 0.35 + 0.15); // scattered strike delay
+                    this.playChimeRod(now + stagger, freq);
+                }
+            }
+
+            playChimeRod(time, freq) {
+                const mainGain = this.ctx.createGain();
+                mainGain.gain.setValueAtTime(0, time);
+                
+                const rodVol = volSettings.chimes * 0.11;
+                mainGain.gain.linearRampToValueAtTime(rodVol, time + 0.004);
+                mainGain.gain.exponentialRampToValueAtTime(0.00001, time + 2.8); // long ringing resonance
+                
+                // Wind chime sounds metallic due to non-harmonic overtones.
+                // We combine 4 sine wave partials at specific inharmonic ratios.
+                const partialRatios = [1.0, 1.414, 2.0, 2.72];
+                
+                partialRatios.forEach((ratio, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const oscGain = this.ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq * ratio, time);
+                    
+                    // Higher partials decay quicker and have lower initial gains
+                    const partVol = idx === 0 ? 1.0 : (1.0 / (idx * 2));
+                    oscGain.gain.setValueAtTime(partVol, time);
+                    
+                    osc.connect(oscGain);
+                    oscGain.connect(mainGain);
+                    
+                    osc.start(time);
+                    osc.stop(time + 3.0);
+                });
+                
+                mainGain.connect(this.dest);
+            }
+
+            stop() {
+                this.isPlaying = false;
+                clearTimeout(this.timer);
+            }
+
+            setVolume(val) {}
+            setMute(mute) {}
+        }
+
+
+        // --- FADE IN / PLAYBACK CONTROL ---
+        
+        function initAudioContext() {
+            if (audioCtx) return;
+            
+            // Create AudioContext
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContextClass();
+            
+            // Setup master visualizer analyser node
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            
+            // Setup master volume gain node
+            masterGainNode = audioCtx.createGain();
+            masterGainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            
+            // Routing: Synths -> Analyser -> Master Gain -> Output Destination
+            analyser.connect(masterGainNode);
+            masterGainNode.connect(audioCtx.destination);
+            
+            // Initialize sound instances
+            synths.pad = new AmbientPadSynth(audioCtx, analyser);
+            synths.piano = new PianoSynth(audioCtx, analyser);
+            synths.wave = new WaveSynth(audioCtx, analyser);
+            synths.rain = new RainSynth(audioCtx, analyser);
+            synths.stream = new StreamSynth(audioCtx, analyser);
+            synths.birds = new BirdsSynth(audioCtx, analyser);
+            synths.wind = new WindSynth(audioCtx, analyser);
+            synths.chimes = new ChimesSynth(audioCtx, analyser);
+            
+            // Start Canvas animation
+            startCanvasVisualizer();
+        }
+
+        function startAllSynths() {
+            const now = audioCtx.currentTime;
+            
+            // Retrieve current values
+            const masterVol = document.getElementById('slide-master').value / 100;
+            
+            // Fade-in Master Volume smoothly over 2.0s
+            masterGainNode.gain.cancelScheduledValues(now);
+            masterGainNode.gain.setValueAtTime(0, now);
+            masterGainNode.gain.linearRampToValueAtTime(masterVol, now + 2.0);
+            
+            // Start each individual synthesizer
+            Object.keys(synths).forEach(key => {
+                if (synths[key]) {
+                    synths[key].start();
+                }
+            });
+        }
+
+        function stopAllSynths() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            
+            // Fade-out Master Volume smoothly over 1.5s
+            masterGainNode.gain.cancelScheduledValues(now);
+            masterGainNode.gain.setValueAtTime(masterGainNode.gain.value, now);
+            masterGainNode.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
+            
+            // Stop after fade out is completed
+            setTimeout(() => {
+                if (!isAudioPlaying) { // check if user didn't hit play again quickly
+                    Object.keys(synths).forEach(key => {
+                        if (synths[key]) {
+                            synths[key].stop();
+                        }
+                    });
+                }
+            }, 1600);
+        }
+
+        function togglePlayState() {
+            // Unlock audio context on user gesture
+            initAudioContext();
+            
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const playBtn = document.getElementById('btn-play');
+            const badge = document.getElementById('status-badge');
+            
+            isAudioPlaying = !isAudioPlaying;
+            
+            if (isAudioPlaying) {
+                playBtn.classList.add('playing');
+                badge.classList.add('playing');
+                badge.textContent = "舒眠律动中";
+                
+                startAllSynths();
+                startBreathingLogic();
+            } else {
+                playBtn.classList.remove('playing');
+                badge.classList.remove('playing');
+                badge.textContent = "已静息";
+                
+                stopAllSynths();
+                stopBreathingLogic();
+            }
+        }
+
+        // --- MASTER CONTROL EVENTS ---
+
+        function updateMasterVolume(val) {
+            const masterVol = val / 100;
+            document.getElementById('lbl-master').textContent = `${val}%`;
+            
+            if (audioCtx && masterGainNode && isAudioPlaying) {
+                masterGainNode.gain.linearRampToValueAtTime(masterVol, audioCtx.currentTime + 0.1);
+            }
+        }
+
+        function updateSynthVol(type, val) {
+            const volume = val / 100;
+            volSettings[type] = volume;
+            document.getElementById(`lbl-${type}`).textContent = `${val}%`;
+            
+            const card = document.getElementById(`card-${type}`);
+            if (volume > 0) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+            
+            // Apply volume dynamically to running synths
+            if (audioCtx && synths[type]) {
+                synths[type].setVolume(volume);
+            }
+            
+            // Mark custom only for direct slider edits, not while a preset animates.
+            if (!isLoadingPreset) {
+                deactivateAllPresets();
+                document.getElementById('preset-empty').classList.add('active');
+            }
+        }
+
+        function toggleMute(type, button) {
+            muteStates[type] = !muteStates[type];
+            
+            if (muteStates[type]) {
+                button.classList.add('muted');
+            } else {
+                button.classList.remove('muted');
+            }
+            
+            if (audioCtx && synths[type]) {
+                synths[type].setMute(muteStates[type]);
+            }
+        }
+
+
+        // --- PRESET LOADER & SMOOTH TRANSITION ---
+        let isLoadingPreset = false;
+        
+        function deactivateAllPresets() {
+            const cards = document.querySelectorAll('.preset-card');
+            cards.forEach(c => c.classList.remove('active'));
+        }
+
+        function loadPreset(presetKey) {
+            isLoadingPreset = true;
+            deactivateAllPresets();
+            document.getElementById(`preset-${presetKey}`).classList.add('active');
+            
+            const presetValues = presets[presetKey];
+            if (!presetValues) return;
+            
+            // Loop through sound elements and smooth slide volumes
+            Object.keys(presetValues).forEach(key => {
+                const targetValue = Math.round(presetValues[key] * 100);
+                const slider = document.getElementById(`slide-${key}`);
+                const currentVal = parseInt(slider.value);
+                
+                // Animate Slider visual move
+                animateSlider(slider, currentVal, targetValue, key);
+            });
+            setTimeout(() => {
+                isLoadingPreset = false;
+                deactivateAllPresets();
+                document.getElementById(`preset-${presetKey}`).classList.add('active');
+            }, 450);
+        }
+
+        // Helper to animate slider values smoothly
+        function animateSlider(slider, start, end, key) {
+            let current = start;
+            const steps = 15;
+            const diff = end - start;
+            let currentStep = 0;
+            
+            if (diff === 0) {
+                updateSynthVol(key, end);
+                return;
+            }
+            
+            const timer = setInterval(() => {
+                currentStep++;
+                const val = Math.round(start + (diff * (currentStep / steps)));
+                slider.value = val;
+                
+                // Trigger inner synth updates
+                const volume = val / 100;
+                volSettings[key] = volume;
+                document.getElementById(`lbl-${key}`).textContent = `${val}%`;
+                
+                const card = document.getElementById(`card-${key}`);
+                if (volume > 0) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+                
+                if (audioCtx && synths[key]) {
+                    synths[key].setVolume(volume);
+                }
+                
+                if (currentStep >= steps) {
+                    clearInterval(timer);
+                    // Force final preset loaded label active state (prevent custom toggle overwrite)
+                    const activePreset = document.querySelector('.preset-card.active');
+                    if (activePreset && activePreset.id === 'preset-empty') {
+                        // Keep as is
+                    }
+                }
+            }, 25);
+        }
+
+        // --- SLEEP TIMER COUNTDOWN ---
+        
+        let sleepTimerId = null;
+        let sleepTimerMinutes = 0;
+        let sleepTimerSecondsTotal = 0;
+        
+        function setSleepTimer(minutes, btn) {
+            // Update Active Buttons
+            const timerOpts = document.querySelectorAll('.timer-opt');
+            timerOpts.forEach(o => o.classList.remove('active'));
+            btn.classList.add('active');
+            
+            sleepTimerMinutes = minutes;
+            sleepTimerSecondsTotal = minutes * 60;
+            
+            const countdownOverlay = document.getElementById('countdown-display');
+            clearInterval(sleepTimerId);
+            
+            if (minutes === 0) {
+                countdownOverlay.classList.remove('active');
+                return;
+            }
+            
+            countdownOverlay.classList.add('active');
+            updateCountdownLabel();
+            
+            // Start interval if music is running
+            if (isAudioPlaying) {
+                startSleepTimerCountdown();
+            }
+        }
+
+        function startSleepTimerCountdown() {
+            if (sleepTimerSecondsTotal <= 0) return;
+            
+            clearInterval(sleepTimerId);
+            sleepTimerId = setInterval(() => {
+                sleepTimerSecondsTotal--;
+                updateCountdownLabel();
+                
+                if (sleepTimerSecondsTotal <= 10 && sleepTimerSecondsTotal > 0) {
+                    // Trigger fadeout indication 10 seconds before cutoff
+                    document.getElementById('countdown-display').style.background = 'rgba(239, 68, 68, 0.15)';
+                    document.getElementById('countdown-display').style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                    document.getElementById('countdown-time').style.color = '#f87171';
+                }
+                
+                if (sleepTimerSecondsTotal <= 0) {
+                    clearInterval(sleepTimerId);
+                    triggerTimerCutoff();
+                }
+            }, 1000);
+        }
+
+        function updateCountdownLabel() {
+            const m = Math.floor(sleepTimerSecondsTotal / 60).toString().padStart(2, '0');
+            const s = (sleepTimerSecondsTotal % 60).toString().padStart(2, '0');
+            document.getElementById('countdown-time').textContent = `${m}:${s}`;
+        }
+
+        function triggerTimerCutoff() {
+            if (!isAudioPlaying) return;
+            
+            // Custom smooth fadeout over 10 seconds to avoid waking the user up
+            const now = audioCtx.currentTime;
+            masterGainNode.gain.cancelScheduledValues(now);
+            masterGainNode.gain.setValueAtTime(masterGainNode.gain.value, now);
+            masterGainNode.gain.exponentialRampToValueAtTime(0.0001, now + 10.0);
+            
+            // Show fade info
+            const badge = document.getElementById('status-badge');
+            badge.textContent = "渐渐隐退中...";
+            
+            setTimeout(() => {
+                // Toggle state off after fade-out completes
+                isAudioPlaying = false;
+                const playBtn = document.getElementById('btn-play');
+                playBtn.classList.remove('playing');
+                badge.classList.remove('playing');
+                badge.textContent = "定时关机";
+                
+                // Stop synth oscillations
+                Object.keys(synths).forEach(key => {
+                    if (synths[key]) synths[key].stop();
+                });
+                
+                stopBreathingLogic();
+                
+                // Reset timer options
+                const timerOpts = document.querySelectorAll('.timer-opt');
+                timerOpts.forEach(o => o.classList.remove('active'));
+                timerOpts[0].classList.add('active'); // reset to infinity
+                document.getElementById('countdown-display').classList.remove('active');
+                
+                // Restore master volume values in UI
+                masterGainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            }, 10000);
+        }
+
+
+        // --- RHYTHMIC BREATHING GUIDANCE SYSTEM ---
+        
+        let breathingTimer = null;
+        let activeBreathingMode = 'relax';
+        let currentPhaseIdx = 0;
+        let phaseElapsed = 0; // in seconds
+
+        const breathingSettings = {
+            relax: {
+                phases: [
+                    { name: 'inhale', duration: 5, text: '吸气', subtext: '腹部缓缓鼓起，吸入温热能量', scaleStart: 1.0, scaleEnd: 1.5, color: 'rgba(99, 102, 241, 0.45)' },
+                    { name: 'exhale', duration: 5, text: '呼气', subtext: '身体放松下沉，缓缓释放积郁', scaleStart: 1.5, scaleEnd: 1.0, color: 'rgba(20, 184, 166, 0.45)' }
+                ]
+            },
+            box: {
+                phases: [
+                    { name: 'inhale', duration: 4, text: '吸气', subtext: '慢慢吸气，让气息填满胸腹', scaleStart: 1.0, scaleEnd: 1.5, color: 'rgba(99, 102, 241, 0.45)' },
+                    { name: 'holdIn', duration: 4, text: '屏息', subtext: '维持饱满，心意归于静止', scaleStart: 1.5, scaleEnd: 1.5, color: 'rgba(168, 85, 247, 0.45)' },
+                    { name: 'exhale', duration: 4, text: '呼气', subtext: '轻轻吐气，将浊气完全排空', scaleStart: 1.5, scaleEnd: 1.0, color: 'rgba(20, 184, 166, 0.45)' },
+                    { name: 'holdOut', duration: 4, text: '屏息', subtext: '放空心意，等待下一次呼吸', scaleStart: 1.0, scaleEnd: 1.0, color: 'rgba(59, 130, 246, 0.45)' }
+                ]
+            },
+            deep: {
+                phases: [
+                    { name: 'inhale', duration: 4, text: '吸气', subtext: '吸气4秒，感受宁静', scaleStart: 1.0, scaleEnd: 1.55, color: 'rgba(99, 102, 241, 0.45)' },
+                    { name: 'holdIn', duration: 7, text: '屏息', subtext: '保持屏息7秒，氧气滋养细胞', scaleStart: 1.55, scaleEnd: 1.55, color: 'rgba(168, 85, 247, 0.45)' },
+                    { name: 'exhale', duration: 8, text: '呼气', subtext: '缓慢悠长地呼气8秒，滑入沉睡', scaleStart: 1.55, scaleEnd: 1.0, color: 'rgba(20, 184, 166, 0.45)' }
+                ]
+            }
+        };
+
+        function switchBreathMode(modeKey, btn) {
+            // Update Active Buttons
+            const buttons = document.querySelectorAll('.breath-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            activeBreathingMode = modeKey;
+            currentPhaseIdx = 0;
+            phaseElapsed = 0;
+            
+            const labels = { relax: '舒缓呼吸 5-5', box: '箱式呼吸 4-4', deep: '深眠呼吸 4-7-8' };
+            document.getElementById('breath-mode-label').textContent = labels[modeKey];
+            
+            // If playing, reset tick immediately
+            if (isAudioPlaying) {
+                clearInterval(breathingTimer);
+                startBreathingLogic();
+            }
+        }
+
+        function startBreathingLogic() {
+            clearInterval(breathingTimer);
+            currentPhaseIdx = 0;
+            phaseElapsed = 0;
+            
+            // Run at 20fps for smooth visual interpolation
+            const intervalMs = 50; 
+            breathingTimer = setInterval(() => {
+                const mode = breathingSettings[activeBreathingMode];
+                const phase = mode.phases[currentPhaseIdx];
+                
+                // Calculate current interpolated scale
+                const progress = phaseElapsed / phase.duration;
+                const currentScale = phase.scaleStart + (phase.scaleEnd - phase.scaleStart) * progress;
+                
+                // Update DOM elements
+                const circle = document.getElementById('breathing-circle');
+                const glow = document.getElementById('breathing-glow');
+                const textEl = document.getElementById('breath-text');
+                const timerEl = document.getElementById('breath-timer');
+                const subtextEl = document.getElementById('breath-subtext');
+                
+                circle.style.transform = `scale(${currentScale})`;
+                glow.style.boxShadow = `0 0 50px 18px ${phase.color}`;
+                glow.style.borderColor = phase.color;
+                
+                textEl.textContent = phase.text;
+                subtextEl.textContent = phase.subtext;
+                timerEl.textContent = `${Math.ceil(phase.duration - phaseElapsed)}秒`;
+                
+                // Increment elapsed time
+                phaseElapsed += (intervalMs / 1000);
+                
+                if (phaseElapsed >= phase.duration) {
+                    phaseElapsed = 0;
+                    currentPhaseIdx = (currentPhaseIdx + 1) % mode.phases.length;
+                }
+            }, intervalMs);
+            
+            // Trigger countdown timer decrement
+            if (sleepTimerSecondsTotal > 0) {
+                startSleepTimerCountdown();
+            }
+        }
+
+        function stopBreathingLogic() {
+            clearInterval(breathingTimer);
+            clearInterval(sleepTimerId);
+            
+            // Restores calm, un-glowing static state
+            const circle = document.getElementById('breathing-circle');
+            const glow = document.getElementById('breathing-glow');
+            const textEl = document.getElementById('breath-text');
+            const timerEl = document.getElementById('breath-timer');
+            const subtextEl = document.getElementById('breath-subtext');
+            
+            circle.style.transform = 'scale(1)';
+            glow.style.boxShadow = '0 0 20px 4px rgba(139, 92, 246, 0.1)';
+            glow.style.borderColor = 'rgba(139, 92, 246, 0.2)';
+            
+            textEl.textContent = "已休止";
+            timerEl.textContent = "--";
+            subtextEl.textContent = "点击 Play 再次进入温热舒适声场";
+        }
+
+
+        // --- DYNAMIC CANVAS WAVEFORM VISUALIZER ---
+        
+        let canvasAnimFrame = null;
+        
+        function startCanvasVisualizer() {
+            const canvas = document.getElementById('visualizer');
+            const canvasCtx = canvas.getContext('2d');
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            function draw() {
+                canvasAnimFrame = requestAnimationFrame(draw);
+                
+                // Auto adjust canvas sizing
+                if (canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight) {
+                    canvas.width = canvas.clientWidth;
+                    canvas.height = canvas.clientHeight;
+                }
+                
+                analyser.getByteTimeDomainData(dataArray);
+                
+                // Clear screen with a slight trailing frame blend for smooth rendering
+                canvasCtx.fillStyle = 'rgba(6, 5, 11, 0.2)';
+                canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const time = Date.now() * 0.001;
+                
+                // Draw 3 layer overlapping wavy sine curves (representing breathing & warmth)
+                // Layer 1: Violet wave (slower)
+                drawOrganicWave(canvasCtx, canvas.width, canvas.height, dataArray, bufferLength,
+                    'rgba(147, 51, 234, 0.07)', 0.9, time * 0.4, 0.004);
+                
+                // Layer 2: Ocean Cyan wave
+                drawOrganicWave(canvasCtx, canvas.width, canvas.height, dataArray, bufferLength,
+                    'rgba(6, 182, 212, 0.09)', 0.65, -time * 0.3, 0.0035);
+                    
+                // Layer 3: Pink/Red warm wave (faster)
+                drawOrganicWave(canvasCtx, canvas.width, canvas.height, dataArray, bufferLength,
+                    'rgba(236, 72, 153, 0.06)', 1.25, time * 0.65, 0.007);
+            }
+            
+            draw();
+        }
+        
+        function drawOrganicWave(ctx, w, h, data, len, color, ampScale, timeOffset, waveLen) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4;
+            
+            const sliceWidth = w / len;
+            let x = 0;
+            
+            for (let i = 0; i < len; i++) {
+                // Time domain data normalizes to 128 mid-point
+                const v = data[i] / 128.0 - 1.0; 
+                
+                // Base background wavy motion (stays active when no sound is playing)
+                const baseSine = Math.sin(i * waveLen + timeOffset) * 14 * ampScale;
+                // Reactive sound displacement
+                const soundDisp = v * 85 * ampScale;
+                
+                // Calculate final Y position (centered vertically)
+                const y = h / 2 + baseSine + soundDisp;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                x += sliceWidth;
+            }
+            ctx.lineTo(w, h / 2);
+            ctx.stroke();
+        }
+
+        // Initialize display triggers
+        window.addEventListener('DOMContentLoaded', () => {
+            // Apply initial UI card states based on volSettings
+            Object.keys(volSettings).forEach(key => {
+                const vol = Math.round(volSettings[key] * 100);
+                document.getElementById(`slide-${key}`).value = vol;
+                document.getElementById(`lbl-${key}`).textContent = `${vol}%`;
+                
+                const card = document.getElementById(`card-${key}`);
+                if (vol > 0) card.classList.add('active');
+                else card.classList.remove('active');
+            });
+            
+            // Adjust master label
+            const masterVol = document.getElementById('slide-master').value;
+            document.getElementById('lbl-master').textContent = `${masterVol}%`;
+        });
+    </script>
+    <script>
+        // DreamGuardian device bridge: preview locally first; persist to the device
+        // only after the user confirms the selected sleep music.
+        (function () {
+            const presetToTool = {
+                ppm: 'scene.ppm',
+                ocean: 'scene.ocean',
+                forest: 'scene.forest',
+                rain: 'scene.rain',
+                zen: 'scene.zen',
+                empty: 'scene.empty'
+            };
+            const breathToTool = {
+                relax: 'breath.relax',
+                box: 'breath.box',
+                deep: 'breath.deep'
+            };
+            const presetLabels = {
+                ppm: '默认律动',
+                ocean: '深海潮汐',
+                forest: '林海晨曦',
+                rain: '雨夜入眠',
+                zen: '太虚禅音',
+                empty: '放空归零'
+            };
+            const breathLabels = {
+                relax: '舒缓 5-5',
+                box: '箱式 4-4',
+                deep: '深眠 4-7-8'
+            };
+            let selectedPreset = 'ppm';
+            let selectedBreath = 'relax';
+            let savedPreset = '';
+            let savedBreath = '';
+
+            function setSaveStatus(text, isError) {
+                const el = document.getElementById('device-save-status');
+                if (!el) return;
+                el.textContent = text;
+                el.style.color = isError ? '#fca5a5' : '';
+            }
+
+            function getActivePreset() {
+                const active = document.querySelector('.preset-card.active');
+                return active && active.id ? active.id.replace('preset-', '') : selectedPreset;
+            }
+
+            function updateSaveHint() {
+                const presetName = presetLabels[selectedPreset] || selectedPreset;
+                const breathName = breathLabels[selectedBreath] || selectedBreath;
+                if (selectedPreset === savedPreset && selectedBreath === savedBreath) {
+                    setSaveStatus(`已保存：${presetName}，${breathName}。之后助眠会播放该音乐。`);
+                } else {
+                    setSaveStatus(`待确认：${presetName}，${breathName}。点击确认后设备助眠时生效。`);
+                }
+            }
+
+            async function sendTool(tool) {
+                const response = await fetch('/api/claw_tool', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'tool=' + encodeURIComponent(tool)
+                });
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.json().catch(() => ({}));
+            }
+
+            async function loadDevicePreferences() {
+                try {
+                    const response = await fetch('/api/status', {cache: 'no-store'});
+                    if (!response.ok) return;
+                    const data = await response.json();
+                    const prefs = data && data.sleep_preferences ? data.sleep_preferences : null;
+                    if (!prefs) return;
+                    if (prefs.scene && presetToTool[prefs.scene]) {
+                        selectedPreset = prefs.scene;
+                        savedPreset = prefs.scene;
+                        if (typeof originalLoadPreset === 'function') {
+                            originalLoadPreset(selectedPreset);
+                        }
+                    }
+                    if (prefs.breath_mode && breathToTool[prefs.breath_mode]) {
+                        selectedBreath = prefs.breath_mode;
+                        savedBreath = prefs.breath_mode;
+                        const btn = document.querySelector(`.breath-btn[onclick*="'${selectedBreath}'"]`);
+                        if (btn && typeof originalSwitchBreathMode === 'function') {
+                            originalSwitchBreathMode(selectedBreath, btn);
+                        }
+                    }
+                    updateSaveHint();
+                } catch (e) {
+                    console.warn('DreamGuardian preference load failed', e);
+                }
+            }
+
+            const originalLoadPreset = window.loadPreset;
+            window.loadPreset = function (presetKey) {
+                if (typeof originalLoadPreset === 'function') {
+                    originalLoadPreset.apply(this, arguments);
+                }
+                if (presetToTool[presetKey]) {
+                    selectedPreset = presetKey;
+                    updateSaveHint();
+                }
+            };
+            const originalSwitchBreathMode = window.switchBreathMode;
+            window.switchBreathMode = function (modeKey, btn) {
+                if (typeof originalSwitchBreathMode === 'function') {
+                    originalSwitchBreathMode.apply(this, arguments);
+                }
+                if (breathToTool[modeKey]) {
+                    selectedBreath = modeKey;
+                    updateSaveHint();
+                }
+            };
+            window.confirmDevicePreset = async function () {
+                selectedPreset = getActivePreset();
+                const button = document.getElementById('confirm-device-preset');
+                try {
+                    if (button) {
+                        button.disabled = true;
+                        button.textContent = '正在保存...';
+                    }
+                    setSaveStatus('正在写入 DreamGuardian 设备...', false);
+                    await sendTool(presetToTool[selectedPreset]);
+                    await sendTool(breathToTool[selectedBreath]);
+                    savedPreset = selectedPreset;
+                    savedBreath = selectedBreath;
+                    updateSaveHint();
+                } catch (e) {
+                    console.warn('DreamGuardian bridge failed', e);
+                    setSaveStatus('保存失败，请确认设备仍在线后重试。', true);
+                } finally {
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent = '确认设为助眠音乐';
+                    }
+                }
+            };
+            window.playDeviceSpeaker = async function () {
+                selectedPreset = getActivePreset();
+                const button = document.getElementById('device-speaker-play');
+                try {
+                    if (button) {
+                        button.disabled = true;
+                        button.textContent = '正在播放到设备...';
+                    }
+                    setSaveStatus('正在发送到 ES8311 扬声器...', false);
+                    await sendTool(presetToTool[selectedPreset]);
+                    if (selectedPreset === 'empty') {
+                        await sendTool('audio.music');
+                    } else {
+                        await sendTool(presetToTool[selectedPreset] + '.play');
+                    }
+                    setSaveStatus('已通过 ES8311 自带扬声器播放。', false);
+                } catch (e) {
+                    console.warn('DreamGuardian device playback failed', e);
+                    setSaveStatus('设备播放失败，请确认 Wi-Fi 和 /api/status。', true);
+                } finally {
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent = '播放到 ES8311 扬声器';
+                    }
+                }
+            };
+            window.addEventListener('DOMContentLoaded', loadDevicePreferences);
+        })();
+    </script>
+</body>
+</html>
